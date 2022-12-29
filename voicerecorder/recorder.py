@@ -56,16 +56,3 @@ class Recorder:
 
     def set_on_stop_listener(self, listener):
         self.stop_listener = listener
-
-    # class MaxTimeLimitTask(threading.Timer):
-    #
-    #     def __init__(self, sleep_duration: int, task):
-    #         super().__init__()
-    #         self.sleep_duration = sleep_duration
-    #         self.task = task
-    #
-    #     def run(self, *args, **kwargs):
-    #         print('Hello')
-    #         sleep(self.sleep_duration)
-    #         self.task()
-    #         print("task done")
