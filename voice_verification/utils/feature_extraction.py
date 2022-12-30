@@ -4,6 +4,7 @@ import python_speech_features as mfcc
 from scipy.io.wavfile import read
 from sklearn.metrics import precision_recall_fscore_support as score
 
+
 class ExtractFeature:
 
     @classmethod  # classmethod is the decorator
@@ -48,13 +49,14 @@ class ExtractFeature:
         Returns the MFCC feature and the delta of the audio thus provided.
         '''
 
-        mfcc_feature = np.asarray
+        # mfcc_feature = np.asarray
 
         rate, audio = read(audio_path)
         mfcc_feature = mfcc.mfcc(audio, rate, 0.025, 0.01, 20, nfft=1200, appendEnergy=True)
         print(mfcc_feature.shape)
         mfcc_feature = preprocessing.scale(mfcc_feature)  # feature is preprocessed
-        delta = self.__calculate_delta(mfcc_feature)
-        combined = np.hstack((mfcc_feature, delta))
+        deltas = self.__calculate_delta(mfcc_feature)
+        delta_deltas = self.__calculate_delta(deltas)
+        combined = np.hstack((mfcc_feature, deltas, delta_deltas))
         print(f'Combined: {combined.shape}')
         return combined
