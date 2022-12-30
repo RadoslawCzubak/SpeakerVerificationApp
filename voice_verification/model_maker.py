@@ -37,13 +37,13 @@ Tips: If the model representive of the different audio files are to be made.
 
 # gmm = GMM(n_components=16, n_iter=200, covariance_type='diag', n_init=3)
 
-model_save_path = "user/{}/model/"  # directory in which model is to saved
+model_save_path = "user/{}/model/gmm"  # directory in which model is to saved
 
 
 def make_model(pipelined_data_frame):
     features = get_stacked_features(pipelined_data_frame)
 
-    model_name = pipelined_data_frame["target_speaker"].iloc[0] + ".gmm"  # get name of speaker
+    model_name = pipelined_data_frame["target_speaker"].iloc[0]  # get name of speaker
 
     # make model
     gmm = GaussianMixture(n_components=16, covariance_type='diag', max_iter=500, n_init=3, verbose=1)

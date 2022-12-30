@@ -4,8 +4,8 @@ from sklearn import mixture
 from voice_verification.utils.feature_extraction import ExtractFeature
 
 user_test_audio_path_format = 'user/{}/test_cache/test.wav'
-user_gmm_model_path_format = 'user/{}/model/{}.gmm'
-minimum_probability = -20
+user_gmm_model_path_format = 'user/{}/model/gmm'
+minimum_probability = 3
 
 
 def load_model(user_name: str):
@@ -14,7 +14,7 @@ def load_model(user_name: str):
 
     @:return: Returns loaded model
     """
-    gmm_file = user_gmm_model_path_format.format(user_name, user_name)
+    gmm_file = user_gmm_model_path_format.format(user_name)
     means = np.load(gmm_file + '_means.npy')
     covar = np.load(gmm_file + '_covariances.npy')
     loaded_gmm = mixture.GaussianMixture(n_components=len(means), covariance_type='diag')

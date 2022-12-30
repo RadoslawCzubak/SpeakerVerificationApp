@@ -1,4 +1,4 @@
-import model_maker as mm
+import voice_verification.model_maker as mm
 from voice_verification.utils.files_reader import GetFiles
 
 
