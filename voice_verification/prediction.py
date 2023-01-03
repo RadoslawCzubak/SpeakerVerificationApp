@@ -2,9 +2,10 @@ import numpy as np
 from sklearn import mixture
 
 from voice_verification.utils.feature_extraction import ExtractFeature
+from constants import ROOT_DIR
 
-user_test_audio_path_format = 'user/{}/test_cache/test.wav'
-user_gmm_model_path_format = 'user/{}/model/gmm'
+user_test_audio_path = ROOT_DIR + '/test.wav'
+user_gmm_model_path_format = ROOT_DIR + '/user/{}/model/gmm'
 minimum_probability = 3
 
 
@@ -37,7 +38,7 @@ def test_predict(user_name: str):
     # existing model
     model = load_model(user_name=user_name)
 
-    test_audio_path = user_test_audio_path_format.format(user_name)
+    test_audio_path = user_test_audio_path
 
     # features of the file to be predicted
     feature = ef.extract_features(test_audio_path)
