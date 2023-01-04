@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QPushButton, QL
 
 from ResultDialog import ResultDialog
 from constants import ROOT_DIR
+from ui.RegisterDialog import RegisterDialog
 from voice_verification.prediction import predict
 from voicerecorder.recorder import Recorder
 
@@ -18,6 +19,22 @@ class Model(QtCore.QObject):
 
 class MainWindow(QMainWindow):
     socketSignal = Signal(bool)
+
+    @Slot()
+    def on_register_clicked(self):
+        username = self.get_username_from_text()
+        if len(username) > 1:
+            if self.check_if_user_exists(username):
+                dialog = ResultDialog("Niestety, istnieje użytkownik z taką nazwą.")
+                dialog.exec()
+            else:
+                dlg = RegisterDialog(username)
+                dlg.setWindowTitle("Registering!")
+                dlg.exec()
+        # na potrzeby testów
+        # dlg = RegisterDialog()
+        # dlg.setWindowTitle("Hello!")
+        # dlg.exec()
 
     def __init__(self):
         super().__init__()
@@ -40,6 +57,7 @@ class MainWindow(QMainWindow):
 
         # Signals
         self.socketSignal.connect(self.show_volume_widget)
+        # self.on_register_clicked()
 
     def initUI(self):
         window = QWidget()
@@ -57,12 +75,13 @@ class MainWindow(QMainWindow):
         self.usernameLabel = QLabel("Nazwa użytkownika:")
         self.usernameTextbox = QLineEdit()
 
-        self.usernameTextbox.setText("marik123")
+        self.usernameTextbox.setText("radek123")
 
         self.loginButton = QPushButton("Zaloguj się")
         self.loginButton.clicked.connect(self.on_login_clicked)
 
         self.registerButton = QPushButton("Utwórz konto")
+        self.registerButton.clicked.connect(self.on_register_clicked)
 
         self.recording_info_widget = QWidget()
         self.recording_label = QLabel("Słychać twój piękny głos")
@@ -146,7 +165,7 @@ class MainWindow(QMainWindow):
                 dialog = ResultDialog("Siemano to ty!")
             else:
                 dialog = ResultDialog("Nie rozpoznano, ić stont")
-            dialog.exec_()
+            dialog.exec()
 
     def get_username_from_text(self) -> str:
         username = self.usernameTextbox.text()

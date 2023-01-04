@@ -10,6 +10,8 @@ import os
 
 import pandas as pd
 
+from constants import ROOT_DIR
+
 '''
 Actually the dataset to be tested is placed inside the test_dataset folder 
 and dataset to be trained is placed inside the train_dataset
@@ -24,7 +26,7 @@ No need to implement for predicting.
 
 class GetFiles:
 
-    def __init__(self, dataset_directory_path="user"):
+    def __init__(self, dataset_directory_path=f"{ROOT_DIR}/user"):
         """
         @:param
 

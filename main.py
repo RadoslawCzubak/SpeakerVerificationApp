@@ -11,4 +11,4 @@ from ui.RecordWindow import RecordWindow
 
 from voice_verification import training
 
-training.train("marik123")
+training.train("radek")

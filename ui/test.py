@@ -2,6 +2,7 @@ import sys
 from PySide6.QtWidgets import (QApplication, QWidget, QCheckBox, QHBoxLayout, 
                                QVBoxLayout, QLabel, QLineEdit, QPushButton)
 
+
 class MyWidget(QWidget):
     def __init__(self):
         super().__init__()
