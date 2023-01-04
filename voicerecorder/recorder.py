@@ -8,8 +8,10 @@ from scipy.io.wavfile import write
 FS = 44100  # Sample rate
 SECONDS = 60  # Duration of recording
 
+
 def callback(indata, outdata, frames, time):
     print(indata)
+
 
 class Recorder:
 

@@ -79,3 +79,66 @@ if __name__ == "__main__":
     widget = MyWidget()
     widget.show()
     sys.exit(app.exec())
+
+#######################################################################################################################
+
+import sys
+from PySide6.QtWidgets import QApplication, QDialog, QMessageBox
+
+class Dialog(QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Set the window properties
+        self.setWindowTitle("My Dialog")
+
+    def closeEvent(self, event):
+        # Show a message box asking the user to confirm the close action
+        result = QMessageBox.question(self, "Confirm Close", "Are you sure you want to close the dialog?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if result == QMessageBox.Yes:
+            # Accept the close event if the user confirms
+            event.accept()
+        else:
+            # Ignore the close event if the user cancels
+            event.ignore()
+
+app = QApplication(sys.argv)
+dialog = Dialog()
+dialog.show()
+sys.exit(app.exec_())
+
+#######################################################################################################################
+
+
+import sys
+from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtGui import QAction
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set the window properties
+        self.setWindowTitle("My Main Window")
+
+        # Create a close action
+        self.close_action = QAction("Close", self)
+        self.close_action.setShortcut("Ctrl+Q")
+
+        # Connect the close action to a custom function
+        self.close_action.triggered.connect(self.on_close)
+
+        # Add the close action to the File menu
+        self.file_menu = self.menuBar().addMenu("File")
+        self.file_menu.addAction(self.close_action)
+
+    def on_close(self):
+        # Custom close function
+        print("Closing the window")
+        self.close()
+
+app = QApplication(sys.argv)
+window = MainWindow()
+window.show()
+sys.exit(app.exec_())

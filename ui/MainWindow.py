@@ -3,8 +3,9 @@ import os
 from PySide6 import QtCore
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtCore import Signal
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QPushButton, QLineEdit, QLabel, QApplication, \
-    QHBoxLayout
+    QHBoxLayout, QProgressBar, QSizePolicy
 
 from ResultDialog import ResultDialog
 from constants import ROOT_DIR
@@ -13,12 +14,9 @@ from voice_verification.prediction import predict
 from voicerecorder.recorder import Recorder
 
 
-class Model(QtCore.QObject):
-    updateProgress = QtCore.Signal(object)
-
-
 class MainWindow(QMainWindow):
-    socketSignal = Signal(bool)
+    volumeSignal = Signal(float)
+    stopRecorderSignal = Signal(bool)
 
     @Slot()
     def on_register_clicked(self):
@@ -45,7 +43,8 @@ class MainWindow(QMainWindow):
         self.usernameTextbox = None
         self.loginButton = None
         self.registerButton = None
-        self.recording_info_widget = None
+        self.recording_info_layout = None
+        self.recording_progress_bar = None
         self.recording_label = None
         self.recording_layout = None
         self.initUI()
@@ -56,8 +55,8 @@ class MainWindow(QMainWindow):
         self.set_recorder_state(False)
 
         # Signals
-        self.socketSignal.connect(self.show_volume_widget)
-        # self.on_register_clicked()
+        self.volumeSignal.connect(self.set_volume_widget)
+        self.stopRecorderSignal.connect(self.on_recorder_stopped)
 
     def initUI(self):
         window = QWidget()
@@ -72,10 +71,12 @@ class MainWindow(QMainWindow):
         # Create widgets
         self.titleLabel = QLabel("Weryfikacja głosowa")
         self.titleLabel.setAlignment(Qt.AlignCenter)
+        self.titleLabel.setStyleSheet("font-size: 24pt; font-weight: bold;")
         self.usernameLabel = QLabel("Nazwa użytkownika:")
+        self.usernameLabel.setAlignment(Qt.AlignLeft | Qt.AlignBottom)
         self.usernameTextbox = QLineEdit()
 
-        self.usernameTextbox.setText("radek123")
+        self.usernameTextbox.setText("radek12355")
 
         self.loginButton = QPushButton("Zaloguj się")
         self.loginButton.clicked.connect(self.on_login_clicked)
@@ -83,15 +84,14 @@ class MainWindow(QMainWindow):
         self.registerButton = QPushButton("Utwórz konto")
         self.registerButton.clicked.connect(self.on_register_clicked)
 
-        self.recording_info_widget = QWidget()
-        self.recording_label = QLabel("Słychać twój piękny głos")
-        self.recording_layout = QHBoxLayout()
-        self.recording_layout.addWidget(self.recording_label)
-        self.recording_info_widget.setLayout(self.recording_layout)
+        self.recording_info_layout = QHBoxLayout()
+        self.recording_progress_bar = QProgressBar()
+        self.recording_progress_bar.setRange(0, 100)
+        self.recording_info_layout.addWidget(self.recording_progress_bar)
 
         # Create layout and add widgets
         layout = QVBoxLayout()
-        layout.addWidget(self.recording_info_widget)
+        layout.addLayout(self.recording_info_layout)
         layout.addWidget(self.titleLabel)
         layout.addWidget(self.usernameLabel)
         layout.addWidget(self.usernameTextbox)
@@ -133,23 +133,19 @@ class MainWindow(QMainWindow):
 
     def set_recorder_state(self, is_enabled: bool):
         if is_enabled:
-            self.recording_info_widget.show()
+            self.recording_progress_bar.show()
             self.loginButton.setText("Nagrywanie - Stop")
             self.loginButton.setStyleSheet("background-color: red; color: white;")
         else:
-            self.recording_info_widget.hide()
+            self.recording_progress_bar.hide()
             self.loginButton.setText("Zaloguj się")
             self.loginButton.setStyleSheet("background-color: #333; color: white;")
 
-    def show_volume_widget(self, is_shown):
-        if is_shown:
-            self.recording_info_widget.show()
-        else:
-            self.recording_info_widget.hide()
+    def set_volume_widget(self, volume):
+        self.recording_progress_bar.setValue(volume)
 
     def on_volume(self, volume):
-        is_speaking = volume > 1
-        self.socketSignal.emit(is_speaking)
+        self.volumeSignal.emit(volume)
 
     @Slot()
     def on_login_clicked(self):
@@ -158,14 +154,11 @@ class MainWindow(QMainWindow):
             if len(username) > 1:
                 if self.check_if_user_exists(username):
                     self._start_record()
+                else:
+                    ResultDialog("Nie znaleziono użytkownika, podaj poprawną nazwę.").exec()
 
         else:
             self._stop_record()
-            if predict(self.get_username_from_text()):
-                dialog = ResultDialog("Siemano to ty!")
-            else:
-                dialog = ResultDialog("Nie rozpoznano, ić stont")
-            dialog.exec()
 
     def get_username_from_text(self) -> str:
         username = self.usernameTextbox.text()
@@ -173,20 +166,29 @@ class MainWindow(QMainWindow):
         return username
 
     def _start_record(self):
-        def on_recorder_stop():
-            self.set_recorder_state(False)
-            self.recorder = None
+        def on_recorder_stop_callback():
+            self.stopRecorderSignal.emit(True)
 
         self.set_recorder_state(True)
         self.recorder = Recorder(output_path=f"{ROOT_DIR}/test.wav")
         self.recorder.record_audio()
-        self.recorder.set_on_stop_listener(on_recorder_stop)
+        self.recorder.set_on_stop_listener(on_recorder_stop_callback)
         self.recorder.set_volume_listener(self.on_volume)
 
     def _stop_record(self):
         self.set_recorder_state(False)
         self.recorder.stop_recording()
         self.recorder = None
+
+    def on_recorder_stopped(self, is_stopped):
+        if is_stopped:
+            self.set_recorder_state(False)
+            self.recorder = None
+            if predict(self.get_username_from_text()):
+                dialog = ResultDialog("Siemano to ty!")
+            else:
+                dialog = ResultDialog("Nie rozpoznano, ić stont")
+            dialog.exec()
 
     @staticmethod
     def check_if_user_exists(username):
