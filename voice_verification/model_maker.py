@@ -1,6 +1,9 @@
+import os
+
 import numpy as np
 from sklearn.mixture import GaussianMixture
 
+from constants import ROOT_DIR
 from voice_verification.utils.feature_extraction import ExtractFeature
 
 '''
@@ -37,7 +40,8 @@ Tips: If the model representive of the different audio files are to be made.
 
 # gmm = GMM(n_components=16, n_iter=200, covariance_type='diag', n_init=3)
 
-model_save_path = "user/{}/model/gmm"  # directory in which model is to saved
+model_save_dir = ROOT_DIR + "/user/{}/model"  # directory in which model is to saved
+model_save_path = model_save_dir + "/gmm"  # directory in which model is to saved
 
 
 def make_model(pipelined_data_frame):
@@ -51,6 +55,8 @@ def make_model(pipelined_data_frame):
 
     # save to file
     model_path = model_save_path.format(model_name)
+    if not os.path.exists(model_save_dir.format(model_name)):
+        os.makedirs(model_save_dir.format(model_name))
     save_model(gmm, model_path)
 
 

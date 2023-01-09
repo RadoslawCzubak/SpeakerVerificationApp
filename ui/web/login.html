@@ -1,0 +1,63 @@
+<html>
+    <head>
+        <style>
+            body {
+                background-color: #f0f0f0;
+                font-family: Arial;
+            }
+            .container {
+                width: 800px;
+                margin: 0 auto;
+                text-align: center;
+            }
+            h1 {
+                color: #333;
+                font-size: 28px;
+            }
+            input {
+                border: 1px solid #ccc;
+                padding: 8px;
+                font-size: 18px;
+                width: 300px;
+            }
+            button {
+                background-color: #333;
+                color: #fff;
+                border: none;
+                padding: 8px;
+                font-size: 18px;
+                width: 150px;
+            }
+            button:hover {
+                background-color: #666;
+            }
+            .error {
+                color: red;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Zaloguj się</h1>
+            <input type="text" id="username" placeholder="Nazwa użytkownika">
+            <button onclick="login()">Zaloguj się</button>
+            <button onclick="open_register_window()">Zarejestruj się</button>
+            <p class="error" id="error"></p>
+        </div>
+        <script src="eel.js"></script>
+        <script>
+            function login() {
+                var username = document.getElementById("username").value;
+                eel.login(username)();
+            }
+            function open_register_window() {
+                eel.open_register_window()();
+            }
+            eel.expose(login_failed);
+            function login_failed() {
+                document.getElementById("error").innerHTML = "Niepoprawna nazwa użytkownika lub hasło";
+            }
+        </script>
+    </body>
+</html>
