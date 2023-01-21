@@ -98,7 +98,6 @@ class RegisterDialog(QDialog):
             train(speaker_name=self.username)
             self.accept()
         else:
-            self.recording_num += 1
             self._stop_record()
 
     def set_recorder_state(self, is_recording):
@@ -132,6 +131,7 @@ class RegisterDialog(QDialog):
 
     def _start_record(self):
         def on_recorder_stop():
+            self.recording_num += 1
             self.set_recorder_state(False)
             self.recorder = None
 

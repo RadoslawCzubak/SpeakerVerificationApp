@@ -76,7 +76,7 @@ class MainWindow(QMainWindow):
         self.usernameLabel.setAlignment(Qt.AlignLeft | Qt.AlignBottom)
         self.usernameTextbox = QLineEdit()
 
-        self.usernameTextbox.setText("radek12355")
+        self.usernameTextbox.setText("")
 
         self.loginButton = QPushButton("Zaloguj się")
         self.loginButton.clicked.connect(self.on_login_clicked)
@@ -185,9 +185,9 @@ class MainWindow(QMainWindow):
             self.set_recorder_state(False)
             self.recorder = None
             if predict(self.get_username_from_text()):
-                dialog = ResultDialog("Siemano to ty!")
+                dialog = ResultDialog("Tak, to ty!")
             else:
-                dialog = ResultDialog("Nie rozpoznano, ić stont")
+                dialog = ResultDialog("Nie rozpoznano użytkownika")
             dialog.exec()
 
     @staticmethod

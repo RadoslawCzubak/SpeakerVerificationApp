@@ -5,6 +5,8 @@ import numpy as np
 import sounddevice as sd
 from scipy.io.wavfile import write
 
+from voice_verification.utils.preprocessing import remove_silence, preprocess_audio
+
 FS = 44100  # Sample rate
 SECONDS = 60  # Duration of recording
 
@@ -66,6 +68,7 @@ class Recorder:
             #recoding_duration_time_ms = self._get_recording_duration_time()
             #recording_sliced = self.recording[:][:int((FS / 1000) * recoding_duration_time_ms)]
             write(self.output_path, FS, np.array(self.recording))
+            preprocess_audio(self.output_path)
 
     def _get_recording_duration_time(self):
         if self.stop_timestamp is not None:

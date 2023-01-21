@@ -6,7 +6,7 @@ from constants import ROOT_DIR
 
 user_test_audio_path = ROOT_DIR + '/test.wav'
 user_gmm_model_path_format = ROOT_DIR + '/user/{}/model/gmm'
-minimum_probability = 3
+minimum_probability = -18
 
 
 def load_model(user_name: str):
